@@ -5,25 +5,40 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 
 TOKEN = os.getenv("BOT_TOKEN")
 
-# Kullanıcı hafıza sistemi
 user_memory = {}
 
-# Stil ve karakter
-girizgahlar = [
-    "Hmm şöyle diyeyim kanka,",
-    "Bak şimdi mantığı şu aslında,",
-    "Açık konuşayım,",
-    "Net söyleyeyim sana,"
+# Yapay "düşünme blokları"
+analizler = [
+    "bu konu aslında birkaç açıdan değerlendirilebilir.",
+    "burada tek bir doğru yok, bakış açısı önemli.",
+    "insanlar genelde bu noktayı gözden kaçırıyor.",
+    "asıl kritik nokta burada başlıyor."
 ]
 
-bitisler = [
-    "sen ne düşünüyorsun bu konuda?",
-    "bence mantıklı ama karar senin 😄",
-    "istersen daha da açabilirim",
-    "senin durum biraz farklı olabilir tabi"
+derinlestirme = [
+    "mesela kısa vadede farklı, uzun vadede farklı sonuçlar doğurabilir.",
+    "çünkü her kararın bir etkisi ve sonucu var.",
+    "burada önemli olan senin önceliğin.",
+    "olayı sadece yüzeyden değil derinden düşünmek lazım."
 ]
 
-# Ana cevap sistemi
+oneriler = [
+    "ben olsam önce durumu netleştirir sonra hareket ederim.",
+    "acele etmek yerine biraz analiz etmek daha mantıklı.",
+    "burada sabırlı olmak seni öne geçirir.",
+    "kontrollü ilerlemek en sağlıklısı olur."
+]
+
+kapanis = [
+    "sen bu konuda ne düşünüyorsun?",
+    "sen olsan nasıl bir yol izlerdin?",
+    "bu sana mantıklı geliyor mu?",
+    "daha detay istersen açabilirim"
+]
+
+def ultra_cevap(mesaj):
+    return f"{random.choice(analizler)} {random.choice(derinlestirme)} {random.choice(oneriler)} {random.choice(kapanis)}"
+
 def cevap_uret(user_id, mesaj):
     mesaj = mesaj.lower()
 
@@ -32,54 +47,26 @@ def cevap_uret(user_id, mesaj):
 
     user_memory[user_id].append(mesaj)
 
-    gir = random.choice(girizgahlar)
-    bit = random.choice(bitisler)
-
-    # Konuya göre cevap
-    if any(k in mesaj for k in ["selam", "merhaba"]):
-        cevap = random.choice([
-            "Selam kanka 😄 nasılsın?",
-            "Aleyküm selam, bugün nasıl gidiyor?",
-            "Selam 😎 ne yapıyorsun bakalım?"
-        ])
-
-    elif "nasılsın" in mesaj:
-        cevap = random.choice([
-            "İyiyim kanka, kafa rahat 😄 sen nasılsın?",
-            "Fena değil, gün akıyor işte 😎 sen?",
-            "Gayet iyiyim, sen anlat bakalım"
-        ])
-
-    elif "napıyorsun" in mesaj:
-        cevap = random.choice([
-            "Sen yazınca sana cevap veriyorum 😄",
-            "Takılıyorum öyle, sen napıyorsun?",
-            "Şu an seninle sohbet ediyorum 😎"
-        ])
+    # Özel konular
+    if "para" in mesaj:
+        return f"Para konusu basit gibi görünür ama aslında strateji işidir. {ultra_cevap(mesaj)}"
 
     elif "aşk" in mesaj or "sevgili" in mesaj:
-        cevap = f"{gir} aşk işleri biraz karmaşık ya 😅 bazen çok iyi bazen kafa yakıyor, {bit}"
+        return f"Aşk konusu tamamen duygusal ama mantık da devreye girmeli. {ultra_cevap(mesaj)}"
 
-    elif "para" in mesaj or "kazan" in mesaj:
-        cevap = f"{gir} para kazanma işi sabır işi kanka, hemen olmuyor ama doğru sistem kurarsan güzel gider, {bit}"
+    elif "gelecek" in mesaj:
+        return f"Gelecek planı yaparken en önemli şey yönünü belirlemek. {ultra_cevap(mesaj)}"
 
     elif "sıkıldım" in mesaj:
-        cevap = random.choice([
-            "Kanka sıkılmak kötü ya 😅 gel sohbet edelim",
-            "Bir şey yapman lazım yoksa kafayı yersin 😄",
-            "Müzik aç + bir şeyle uğraş, düzelir"
-        ])
+        return "Sıkılmak aslında beynin yeni bir şey istediğini gösterir. Kendini geliştirecek bir şey bulman lazım. Mesela yeni bir skill öğrenmek bile fark yaratır. Sen genelde boş kaldığında ne yaparsın?"
+
+    elif "nasılsın" in mesaj:
+        return "İyiyim kanka 😄 ama asıl önemli olan senin nasıl olduğun. Günün nasıl geçiyor?"
 
     else:
-        # Hafızaya göre cevap
-        onceki = user_memory[user_id][-3:]
-
-        cevap = f"{gir} dediğin şey mantıklı aslında. {random.choice(['biraz daha açarsan daha iyi anlayabilirim', 'detaya girersen sana daha net cevap veririm', 'tam olarak ne demek istediğini çözmeye çalışıyorum'])}. {bit}"
-
-    return cevap
+        return ultra_cevap(mesaj)
 
 
-# Bot handler
 async def cevap(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     mesaj = update.message.text
@@ -90,10 +77,9 @@ async def cevap(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     app = Application.builder().token(TOKEN).build()
-
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, cevap))
 
-    print("🔥 Ultra bot çalışıyor...")
+    print("ULTRA CHATGPT MODE 🚀")
     app.run_polling()
 
 
