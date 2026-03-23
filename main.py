@@ -3,9 +3,9 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTyp
 import os
 from openai import OpenAI
 
-client = OpenAI(api_key=os.getenv("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"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-TOKEN = os.getenv("8763267719:AAEVN8goeeGZK03yW0ecEFcUnlz_1Z8In20")
+TOKEN = os.getenv("BOT_TOKEN")
 
 async def cevap(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
